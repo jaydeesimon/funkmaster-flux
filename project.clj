@@ -13,7 +13,8 @@
                  [ring-jetty-component "0.3.1"]
                  [duct/hikaricp-component "0.1.0"]
                  [org.xerial/sqlite-jdbc "3.8.11.2"]
-                 [com.layerware/hugsql "0.4.7"]]
+                 [com.layerware/hugsql "0.4.7"]
+                 [ring/ring-json "0.4.0"]]
   :plugins [[lein-environ "1.0.3"]]
   :main ^:skip-aot flux-master.main
   :target-path "target/%s/"

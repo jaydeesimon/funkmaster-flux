@@ -7,10 +7,13 @@
             [meta-merge.core :refer [meta-merge]]
             [ring.component.jetty :refer [jetty-server]]
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
-            [flux-master.endpoint.example :refer [example-endpoint]]))
+            [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
+            [flux-master.endpoint.bulbs :refer [bulbs-endpoint]]))
 
 (def base-config
   {:app {:middleware [[wrap-not-found :not-found]
+                      [wrap-json-response :json-response]
+                      [wrap-json-body :json-body]
                       [wrap-defaults :defaults]]
          :not-found  "Resource Not Found"
          :defaults   (meta-merge api-defaults {})}})
@@ -21,8 +24,8 @@
          :app  (handler-component (:app config))
          :http (jetty-server (:http config))
          :db   (hikaricp (:db config))
-         :example (endpoint-component example-endpoint))
+         :bulbs (endpoint-component bulbs-endpoint))
         (component/system-using
          {:http [:app]
-          :app  [:example]
-          :example [:db]}))))
+          :app  [:bulbs]
+          :bulbs [:db]}))))

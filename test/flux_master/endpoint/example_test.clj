@@ -2,13 +2,12 @@
   (:require [com.stuartsierra.component :as component]
             [clojure.test :refer :all]
             [kerodon.core :refer :all]
-            [kerodon.test :refer :all]
-            [flux-master.endpoint.example :as example]))
+            [kerodon.test :refer :all]))
 
-(def handler
+#_(def handler
   (example/example-endpoint {}))
 
-(deftest smoke-test
+#_(deftest smoke-test
   (testing "example page exists"
     (-> (session handler)
         (visit "/example")
