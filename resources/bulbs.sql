@@ -13,6 +13,7 @@ create table bulb(
 -- :doc Create bulb-state-table
 create table bulb_state(
   bulb_id varchar(40) primary key,
+  ip varchar(40),
   power boolean not null default false,
   online boolean not null default false,
   mode varchar(20),
@@ -21,6 +22,32 @@ create table bulb_state(
   last_updated integer,
   foreign key(bulb_id) references bulb(id)
 );
+
+-- :name all-bulbs :? :*
+select b.id,
+       b.description,
+       bs.ip,
+       bs.power,
+       bs.mode,
+       bs.rgb,
+       bs.ww_percent,
+       bs.last_updated
+from bulb b
+  left join bulb_state bs on b.id = bs.bulb_id
+where bs.online;
+
+-- :name get-bulb :? :1
+select b.id,
+       b.description,
+       bs.ip,
+       bs.power,
+       bs.mode,
+       bs.rgb,
+       bs.ww_percent,
+       bs.last_updated
+from bulb b
+  left join bulb_state bs on b.id = bs.bulb_id
+where bs.online and b.id = :id;
 
 -- :name drop-bulb-state-table
 -- :command :execute

@@ -12,11 +12,12 @@
 
 (def base-config
   {:app {:middleware [[wrap-not-found :not-found]
-                      [wrap-json-response :json-response]
-                      [wrap-json-body :json-body]
+                      [wrap-json-response]
+                      [wrap-json-body :json-in]
                       [wrap-defaults :defaults]]
-         :not-found  "Resource Not Found"
-         :defaults   (meta-merge api-defaults {})}})
+         :not-found "Resource Not Found"
+         :defaults (meta-merge api-defaults {})
+         :json-in {:keywords? true} }})
 
 (defn new-system [config]
   (let [config (meta-merge base-config config)]
