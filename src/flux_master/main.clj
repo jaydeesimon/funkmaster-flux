@@ -8,7 +8,7 @@
             [flux-master.system :refer [new-system]]))
 
 (def prod-config
-  {:app {:middleware     [[wrap-hide-errors :internal-error]]
+  {:app {:middleware [[wrap-hide-errors :internal-error]]
          :internal-error "Internal Server Error"}})
 
 (def config

@@ -4,7 +4,9 @@
 -- :doc Create bulbs table
 create table bulb(
   id varchar(40) primary key,
-  description varchar(128)
+  description varchar(128),
+  model varchar(128) not null,
+  ip varchar(40) not null
 );
 
 -- :name create-bulb-state-table
