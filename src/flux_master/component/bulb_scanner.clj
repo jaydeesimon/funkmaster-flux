@@ -3,13 +3,10 @@
             [com.stuartsierra.component :as component]
             [flux-led.core :as led]))
 
-(defn do-with-scan [db bulbs]
-  (println db bulbs))
-
 (defn bulb-scan-chan [{{db :spec} :db} f]
   (let [c (chan)]
     (go-loop []
-      (let [[v _] (alts! [c (timeout 10000)])
+      (let [[v _] (alts! [c (timeout 30000)])
             f (or f identity)]
         (if (not= v :shutdown)
           (do (f db (led/scan))
@@ -17,12 +14,12 @@
           (close! c))))
     c))
 
-(defrecord BulbScanner [found-bulbs-fn]
+(defrecord BulbScanner [scanned-bulbs-fn]
   component/Lifecycle
 
   (start [component]
     (if-not (:scan-chan component)
-      (assoc component :scan-chan (bulb-scan-chan component found-bulbs-fn))
+      (assoc component :scan-chan (bulb-scan-chan component scanned-bulbs-fn))
       component))
 
   (stop [component]
@@ -32,5 +29,5 @@
         (dissoc component :scan-chan))
       component)))
 
-(defn bulb-scanner [found-bulbs-fn]
-  (->BulbScanner found-bulbs-fn))
+(defn bulb-scanner [scanned-bulbs-fn]
+  (->BulbScanner scanned-bulbs-fn))

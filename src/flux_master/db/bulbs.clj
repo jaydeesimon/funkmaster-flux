@@ -5,11 +5,9 @@
 (hugsql/def-db-fns (io/resource "bulbs.sql"))
 
 (defn create-tables [db]
-  (create-bulb-table db)
-  (create-bulb-state-table db))
+  (create-bulb-table db))
 
 (defn drop-tables [db]
-  (drop-bulb-state-table db)
   (drop-bulb-table db))
 
 

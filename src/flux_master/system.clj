@@ -9,7 +9,8 @@
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
             [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
             [flux-master.endpoint.bulbs :refer [bulbs-endpoint]]
-            [flux-master.component.bulb-scanner :as bs]))
+            [flux-master.component.bulb-scanner :as bs]
+            [flux-master.bulbs :refer [update-bulb-states!]]))
 
 (def base-config
   {:app {:middleware [[wrap-not-found :not-found]
@@ -27,7 +28,7 @@
           :http (jetty-server (:http config))
           :db (hikaricp (:db config))
           :bulbs-endpoint (endpoint-component bulbs-endpoint)
-          :bulb-scanner (bs/bulb-scanner bs/do-with-scan))
+          :bulb-scanner (bs/bulb-scanner update-bulb-states!))
         (component/system-using
           {:http [:app]
            :app [:bulbs-endpoint]
