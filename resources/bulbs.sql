@@ -7,7 +7,7 @@ create table bulb (
   description varchar(128),
   model varchar(128) not null,
   ip varchar(40) not null,
-  online boolean not null default true
+  is_online integer not null default 1
 );
 
 -- :name insert-bulb :! :n
@@ -18,7 +18,7 @@ insert into bulb (id, model, ip)
 update bulb set ip = :ip where id = :id;
 
 -- :name update-online :! :n
-update bulb set online = :online
+update bulb set is_online = :online
 where id in (:v*:ids);
 
 -- :name all-bulbs :? :*
