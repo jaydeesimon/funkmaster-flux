@@ -17,6 +17,9 @@ insert into bulb (id, model, ip)
 -- :name update-bulb-ip :! :n
 update bulb set ip = :ip where id = :id;
 
+-- :name update-bulb-description :! :n
+update bulb set description = :description where id = :id;
+
 -- :name update-online :! :n
 update bulb set is_online = :online
 where id in (:v*:ids);
