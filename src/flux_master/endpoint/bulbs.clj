@@ -8,7 +8,10 @@
 (defn- bulb-404 [id]
   (not-found {:message (str "Bulb " id " not found.")}))
 
-(defn bulbs-endpoint [{{db :spec} :db}]
+(defn bulb-request [id f & args]
+  )
+
+(defn bulb-endpoint [{{db :spec } :db}]
   (context "/api/1" []
     (GET "/bulb/:id" [id]
       (if-let [bulb (db/get-bulb db {:id id} {} {:row-fn convert-bools})]
@@ -19,6 +22,7 @@
       (response (db/all-bulbs db {} {} {:row-fn convert-bools})))
 
     (POST "/bulb/:id/rgb" [id :as {{rgb :rgb} :body}]
+      (bulb-request id led/rgb rgb)
       (if-let [{ip :ip} (db/get-bulb db {:id id})]
         (do (led/rgb ip rgb)
             (response {:id id}))

@@ -23,3 +23,4 @@
     (into {}
           (for [[k v] m]
             (map-entry k (apply f k v args))))))
+

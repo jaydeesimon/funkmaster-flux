@@ -24,6 +24,9 @@ update bulb set description = :description where id = :id;
 update bulb set is_online = :online
 where id in (:v*:ids);
 
+-- :name update-bulb-state :! :n
+update bulb set ip = :ip, is_online = :online where id = :id;
+
 -- :name all-bulbs :? :*
 select * from bulb;
 

@@ -1,28 +1,34 @@
 (ns flux-master.bulbs
-  (:require [clojure.java.jdbc :as jdbc]
-            [flux-master.db.bulbs :as bdb]
-            [clojure.set :refer [difference]]))
+  (:require [flux-master.db.bulbs :as bdb]
+            [clojure.set :refer [union difference]]
+            [clojure.core.async :refer [chan]]))
 
-(defn- insert-missing-bulbs [tx cur-bulb-ids bulbs]
-  (let [bulbs-to-insert (remove #(cur-bulb-ids (:id %)) bulbs)]
-    (->> (map (partial bdb/insert-bulb tx) bulbs-to-insert)
-         (reduce +))))
-
-(defn- update-bulb-ips [tx bulbs]
-  (->> (map (fn [{:keys [id ip]}]
-              (bdb/update-bulb-ip tx {:id id :ip ip}))
-            bulbs)
+(defn insert-bulbs [{{db :spec} :db} bulbs]
+  (->> (map (partial bdb/insert-bulb db) bulbs)
        (reduce +)))
 
-(defn- update-online-offline [tx cur-bulb-ids bulbs]
-  (let [online-ids (set (map :id bulbs))
-        offline-ids (difference cur-bulb-ids online-ids)]
-    (do (bdb/update-online tx {:ids online-ids :online true})
-        (bdb/update-online tx {:ids offline-ids :online false}))))
+(defn- update-bulb-state-fn [db online?]
+  (fn [{:keys [id ip]}]
+    (bdb/update-bulb-state db {:id id :ip ip :online (if online? 1 0)})))
 
-(defn update-bulb-states! [db bulbs]
-  (jdbc/with-db-transaction [tx db]
-    (let [cur-bulb-ids (set (map :id (bdb/all-bulbs db)))]
-      (insert-missing-bulbs tx cur-bulb-ids bulbs)
-      (update-bulb-ips tx bulbs)
-      (update-online-offline tx cur-bulb-ids bulbs))))
+(defn with-offline-bulbs [{{db :spec} :db} bulbs]
+  (reduce + (map (update-bulb-state-fn db false) bulbs)))
+
+;; TODO: Clean this up!
+(defn update-bulb-chans [{{bulb-chans :bulb-chans} :bulb-chans} db-bulbs scanned-bulbs]
+  (let [db-ids (set (map :id db-bulbs))
+        scanned-ids (set (map :id scanned-bulbs))
+        all-ids (union db-ids scanned-ids)]
+    (swap! bulb-chans
+           (fn [bulb-chans all-ids]
+             (into bulb-chans
+                   (map (fn [id]
+                          (if (not (get bulb-chans id))
+                            [id (chan)]
+                            [id (get bulb-chans id)]))
+                        all-ids)))
+           all-ids)))
+
+(defn with-all-bulbs [{{db :spec} :db :as component} db-bulbs scanned-bulbs]
+  (do (update-bulb-chans component db-bulbs scanned-bulbs)
+      (reduce + (map (update-bulb-state-fn db true) scanned-bulbs))))

@@ -8,9 +8,10 @@
             [ring.component.jetty :refer [jetty-server]]
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
             [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
-            [flux-master.endpoint.bulbs :refer [bulbs-endpoint]]
+            [flux-master.endpoint.bulbs :as be]
+            [flux-master.bulbs :as b]
             [flux-master.component.bulb-scanner :as bs]
-            [flux-master.bulbs :refer [update-bulb-states!]]))
+            [flux-master.component.bulb-channels :as bc]))
 
 (def base-config
   {:app {:middleware [[wrap-not-found :not-found]
@@ -27,10 +28,12 @@
           :app (handler-component (:app config))
           :http (jetty-server (:http config))
           :db (hikaricp (:db config))
-          :bulbs-endpoint (endpoint-component bulbs-endpoint)
-          :bulb-scanner (bs/bulb-scanner update-bulb-states!))
+          :bulb-endpoint (endpoint-component be/bulb-endpoint)
+          :bulb-scanner (bs/bulb-scanner b/insert-bulbs b/with-offline-bulbs b/with-all-bulbs)
+          :bulb-chans (bc/bulb-chans-component))
         (component/system-using
           {:http [:app]
-           :app [:bulbs-endpoint]
-           :bulbs-endpoint [:db]
-           :bulb-scanner [:db]}))))
+           :app [:bulb-endpoint]
+           :bulb-endpoint [:db]
+           :bulb-scanner [:db :bulb-chans]
+           :bulb-chans [:db]}))))
