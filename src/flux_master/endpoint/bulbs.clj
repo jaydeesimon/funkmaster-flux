@@ -16,7 +16,7 @@
     (go (>! c (vec (concat [f] args))))
     (response {:id id})))
 
-(defn error-response [body]
+(defn bad-input [body]
   (-> (response body)
       (status 400)))
 
@@ -36,14 +36,14 @@
       (if-let [{:keys [id ip]} (db/get-bulb-id-or-desc db id)]
         (if-let [rgb (util/coerce-to-rgb-or-nil rgb)]
           (route-command id bulb-chans led/rgb ip rgb)
-          (error-response {:error "Invalid RGB"}))
+          (bad-input {:error "Invalid RGB"}))
         (bulb-404 id)))
 
     (POST "/bulb/:id/white" [id :as {{percent :percent} :body}]
       (if-let [{:keys [id ip]} (db/get-bulb-id-or-desc db id)]
         (if (and (integer? percent) (>= percent 0) (<= percent 100))
           (route-command id bulb-chans led/warm-white ip percent)
-          (error-response {:error "Invalid percent. Please specify from 1-100."}))
+          (bad-input {:error "Invalid percent. Please specify from 1-100."}))
         (bulb-404 id)))
 
     (POST "/bulb/:id/on" [id]
