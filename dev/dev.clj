@@ -11,7 +11,8 @@
             [ring.middleware.stacktrace :refer [wrap-stacktrace]]
             [dev.tasks :refer :all]
             [flux-master.config :as config]
-            [flux-master.system :as system]))
+            [flux-master.system :as system]
+            [flux-master.db :as db]))
 
 (def dev-config
   {:app {:middleware [wrap-stacktrace]}})
@@ -31,3 +32,10 @@
 (gen/set-ns-prefix 'flux-master)
 
 (reloaded.repl/set-init! new-system)
+
+(def db (-> system :db :spec))
+
+(defn reset-tables []
+  (let [db (-> system :db :spec)]
+    (db/drop-tables db)
+    (db/create-tables db)))

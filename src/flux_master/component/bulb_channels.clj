@@ -1,6 +1,6 @@
 (ns flux-master.component.bulb-channels
   (:require [clojure.core.async :refer [>! <! <!! go go-loop chan close! alts! timeout]]
-            [flux-master.db.bulbs :refer [all-bulbs]]
+            [flux-master.db :refer [all-bulbs]]
             [com.stuartsierra.component :as component]))
 
 (defn setup-listener [c]

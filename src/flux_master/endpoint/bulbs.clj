@@ -1,15 +1,16 @@
 (ns flux-master.endpoint.bulbs
   (:require [compojure.core :refer :all]
             [ring.util.response :refer [response not-found]]
-            [flux-master.db.bulbs :as db]
-            [flux-master.db.bulbs :refer [convert-bools]]
+            [flux-master.db :as db]
+            [flux-master.db :refer [convert-bools]]
             [flux-led.core :as led]
             [clojure.core.async :refer [>!! >! <! <!! go go-loop chan close! alts! timeout]]))
 
 (defn- bulb-404 [id]
   (not-found {:message (str "Bulb " id " not found.")}))
 
-(defn bulb-endpoint [{{db :spec} :db {bulb-chans :bulb-chans} :bulb-chans}]
+(defn bulb-endpoint [{{db :spec} :db
+                      {bulb-chans :bulb-chans} :bulb-chans}]
   (context "/api/1" []
     (GET "/bulb/:id" [id]
       (if-let [bulb (db/get-bulb db {:id id} {} {:row-fn convert-bools})]

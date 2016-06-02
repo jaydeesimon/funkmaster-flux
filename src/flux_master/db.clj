@@ -1,4 +1,4 @@
-(ns flux-master.db.bulbs
+(ns flux-master.db
   (:require [hugsql.core :as hugsql]
             [clojure.java.io :as io]
             [flux-master.util :refer [map-vals-with-keys map-keys]]
