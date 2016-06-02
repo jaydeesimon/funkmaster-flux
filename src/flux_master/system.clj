@@ -34,6 +34,6 @@
         (component/system-using
           {:http [:app]
            :app [:bulb-endpoint]
-           :bulb-endpoint [:db]
+           :bulb-endpoint [:db :bulb-chans]
            :bulb-scanner [:db :bulb-chans]
            :bulb-chans [:db]}))))

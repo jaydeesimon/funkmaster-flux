@@ -3,15 +3,13 @@
             [ring.util.response :refer [response not-found]]
             [flux-master.db.bulbs :as db]
             [flux-master.db.bulbs :refer [convert-bools]]
-            [flux-led.core :as led]))
+            [flux-led.core :as led]
+            [clojure.core.async :refer [>!! >! <! <!! go go-loop chan close! alts! timeout]]))
 
 (defn- bulb-404 [id]
   (not-found {:message (str "Bulb " id " not found.")}))
 
-(defn bulb-request [id f & args]
-  )
-
-(defn bulb-endpoint [{{db :spec } :db}]
+(defn bulb-endpoint [{{db :spec} :db {bulb-chans :bulb-chans} :bulb-chans}]
   (context "/api/1" []
     (GET "/bulb/:id" [id]
       (if-let [bulb (db/get-bulb db {:id id} {} {:row-fn convert-bools})]
@@ -22,11 +20,13 @@
       (response (db/all-bulbs db {} {} {:row-fn convert-bools})))
 
     (POST "/bulb/:id/rgb" [id :as {{rgb :rgb} :body}]
-      (bulb-request id led/rgb rgb)
-      (if-let [{ip :ip} (db/get-bulb db {:id id})]
-        (do (led/rgb ip rgb)
-            (response {:id id}))
-        (bulb-404 id)))
+      (let [{ip :ip} (db/get-bulb db {:id id})
+            c (get @bulb-chans id)]
+        (if ip
+          (do (go (>! c [led/rgb ip rgb]))
+              (go (>! c :pause))
+              (response {:id id}))
+          (bulb-404 id))))
 
     (POST "/bulb/:id/white" [id :as {{percent :percent} :body}]
       (response [id percent]))
