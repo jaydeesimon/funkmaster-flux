@@ -16,7 +16,8 @@
                  [com.layerware/hugsql "0.4.7"]
                  [ring/ring-json "0.4.0"]
                  [flux-led/flux-led "0.1.0-SNAPSHOT"]
-                 [org.clojure/core.async "0.2.374"]]
+                 [org.clojure/core.async "0.2.374"]
+                 [com.taoensso/truss "1.2.0"]]
   :plugins [[lein-environ "1.0.3"]]
   :main ^:skip-aot flux-master.main
   :target-path "target/%s/"

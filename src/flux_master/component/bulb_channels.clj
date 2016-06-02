@@ -7,7 +7,8 @@
   (go-loop []
     (let [v (<! c)]
       (if (vector? v)
-        (apply (first v) (rest v))
+        (do (go (>! c :throttle))
+            (apply (first v) (rest v)))
         (<! (timeout 2000))))
     (recur))
   c)

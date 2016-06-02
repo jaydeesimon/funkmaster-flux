@@ -12,7 +12,8 @@
             [dev.tasks :refer :all]
             [flux-master.config :as config]
             [flux-master.system :as system]
-            [flux-master.db :as db]))
+            [flux-master.db :as db]
+            [clojure.core.async :refer [>!! >! <! <!! go-loop chan close! alts! timeout]]))
 
 (def dev-config
   {:app {:middleware [wrap-stacktrace]}})
