@@ -18,12 +18,12 @@
 
 (defn error-response [body]
   (-> (response body)
-      (status 400))
-  )
+      (status 400)))
 
 (defn bulb-endpoint [{{db :spec} :db
                       {bulb-chans :bulb-chans} :bulb-chans-comp}]
   (context "/api/1" []
+
     (GET "/bulb/:id" [id]
       (if-let [bulb (db/get-bulb-id-or-desc db id)]
         (response bulb)
