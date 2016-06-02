@@ -10,11 +10,8 @@
             [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
             [flux-master.endpoint.bulbs :as be]
             [flux-master.component.bulb-scanner :as bs]
-            [flux-master.component.bulb-channels :as bc]))
-
-(defn with-scanned-bulbs [component bulbs]
-  (print "Scanned bulbs!")
-  (clojure.pprint/pprint bulbs))
+            [flux-master.component.bulb-channels :as bc]
+            [flux-master.scan :as scan]))
 
 (def base-config
   {:app {:middleware [[wrap-not-found :not-found]
@@ -32,11 +29,11 @@
           :http (jetty-server (:http config))
           :db (hikaricp (:db config))
           :bulb-endpoint (endpoint-component be/bulb-endpoint)
-          :bulb-scanner (bs/bulb-scanner with-scanned-bulbs)
-          :bulb-chans (bc/bulb-chans-component))
+          :bulb-scanner-comp (bs/bulb-scanner scan/with-scanned-bulbs)
+          :bulb-chans-comp (bc/bulb-chans))
         (component/system-using
           {:http [:app]
            :app [:bulb-endpoint]
-           :bulb-endpoint [:db :bulb-chans]
-           :bulb-scanner [:db]
-           :bulb-chans [:db]}))))
+           :bulb-endpoint [:db :bulb-chans-comp]
+           :bulb-scanner-comp [:db :bulb-chans-comp]
+           :bulb-chans-comp [:db]}))))

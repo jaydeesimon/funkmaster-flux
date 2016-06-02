@@ -19,10 +19,10 @@ update bulb set ip = :ip where id = :id;
 -- :name update-bulb-description :! :n
 update bulb set description = :description where id = :id;
 
--- :name all-bulbs :? :*
+-- :name all-bulbs* :? :*
 select * from bulb;
 
--- :name get-bulb :? :1
+-- :name get-bulb* :? :1
 select * from bulb where id = :id;
 
 -- :name drop-bulb-table

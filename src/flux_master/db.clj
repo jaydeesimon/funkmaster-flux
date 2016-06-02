@@ -36,4 +36,10 @@
 (defn drop-tables [db]
   (drop-bulb-table db))
 
+(defn all-bulbs [db]
+  (all-bulbs* db {} {} {:row-fn convert-bools}))
+
+(defn get-bulb [db id]
+  (get-bulb* db {:id id} {} {:row-fn convert-bools}))
+
 

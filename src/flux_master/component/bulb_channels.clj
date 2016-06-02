@@ -3,7 +3,7 @@
             [flux-master.db :refer [all-bulbs]]
             [com.stuartsierra.component :as component]))
 
-(defn setup-listener [c]
+(defn- setup-listener [c]
   (go-loop []
     (let [v (<! c)]
       (if (vector? v)
@@ -12,7 +12,7 @@
     (recur))
   c)
 
-(defn- bulb-chans [{{db :spec} :db}]
+(defn- init-bulb-chans [{{db :spec} :db}]
   (let [db-ids (map :id (all-bulbs db))]
     (into {} (map (fn [id] [id (setup-listener (chan))]) db-ids))))
 
@@ -23,16 +23,16 @@
 (defrecord BulbChannels []
   component/Lifecycle
 
-  (start [component]
-    (if (not (:bulb-chans component))
-      (assoc component :bulb-chans (atom (bulb-chans component)))
-      component))
+  (start [this]
+    (if (not (:bulb-chans this))
+      (assoc this :bulb-chans (atom (init-bulb-chans this)))
+      this))
 
-  (stop [component]
-    (if (:bulb-chans component)
-      (do (close-bulb-chans! @(:bulb-chans component))
-          (dissoc component :bulb-chans))
-      component)))
+  (stop [this]
+    (if (:bulb-chans this)
+      (do (close-bulb-chans! @(:bulb-chans this))
+          (dissoc this :bulb-chans))
+      this)))
 
-(defn bulb-chans-component []
+(defn bulb-chans []
   (->BulbChannels))

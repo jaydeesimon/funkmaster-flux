@@ -10,15 +10,15 @@
   (not-found {:message (str "Bulb " id " not found.")}))
 
 (defn bulb-endpoint [{{db :spec} :db
-                      {bulb-chans :bulb-chans} :bulb-chans}]
+                      {bulb-chans :bulb-chans} :bulb-chans-comp}]
   (context "/api/1" []
     (GET "/bulb/:id" [id]
-      (if-let [bulb (db/get-bulb db {:id id} {} {:row-fn convert-bools})]
+      (if-let [bulb (db/get-bulb db id)]
         (response bulb)
         (bulb-404 id)))
 
     (GET "/bulbs" []
-      (response (db/all-bulbs db {} {} {:row-fn convert-bools})))
+      (response (db/all-bulbs db)))
 
     (POST "/bulb/:id/rgb" [id :as {{rgb :rgb} :body}]
       (let [{ip :ip} (db/get-bulb db {:id id})

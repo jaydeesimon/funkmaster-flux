@@ -15,18 +15,18 @@
 (defrecord BulbScanner [scanned-bulbs-fn]
   component/Lifecycle
 
-  (start [component]
-    (if-not (:scan-chan component)
-      (assoc component :scan-chan (setup-scan-chan component scanned-bulbs-fn))
-      component))
+  (start [this]
+    (if-not (:scan-chan this)
+      (assoc this :scan-chan (setup-scan-chan this scanned-bulbs-fn))
+      this))
 
-  (stop [component]
-    (if-let [scan-chan (:scan-chan component)]
+  (stop [this]
+    (if-let [scan-chan (:scan-chan this)]
       (do
         (>!! scan-chan :stop)
         (close! scan-chan)
-        (dissoc component :scan-chan))
-      component)))
+        (dissoc this :scan-chan))
+      this)))
 
 (defn bulb-scanner [scanned-bulbs-fn]
   (->BulbScanner scanned-bulbs-fn))
