@@ -1,6 +1,6 @@
-# Description
+# Funkmaster Flux
 
-A central server that I plan to use to coordinate my network of Flux Lightbulbs. But mostly, an excuse to learn more about core.async and Stuart Sierra's component library.
+A central server that I plan to use to coordinate my network of Flux Lightbulbs. But mostly, an excuse to learn more about core.async and Stuart Sierra's component library. The project was created from the [Duct](https://github.com/weavejester/duct) Leiningen template. Big thanks to [@weavejester.](https://github.com/weavejester)
 
 ## Developing
 
