@@ -3,7 +3,7 @@
             [flux-master.db :refer [all-bulbs]]
             [com.stuartsierra.component :as component]))
 
-(defn- setup-listener [c]
+(defn- init-listener [c]
   (go-loop []
     (let [v (<! c)]
       (if (vector? v)
@@ -14,7 +14,7 @@
 
 (defn- init-bulb-chans [{{db :spec} :db}]
   (let [db-ids (map :id (all-bulbs db))]
-    (into {} (map (fn [id] [id (setup-listener (chan))]) db-ids))))
+    (into {} (map (fn [id] [id (init-listener (chan))]) db-ids))))
 
 (defn- close-bulb-chans! [bulb-chans]
   (doseq [[_ c] bulb-chans]
