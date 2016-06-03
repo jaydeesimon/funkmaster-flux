@@ -14,7 +14,7 @@
 (defn route-command [id bulb-chans f & args]
   (let [c (have some? (get @bulb-chans id))]
     (go (>! c (vec (concat [f] args))))
-    (response {:id id})))
+    {:id id}))
 
 (defn bad-input [body]
   (-> (response body)
@@ -32,28 +32,42 @@
     (GET "/bulbs" []
       (response (db/all-bulbs db)))
 
+    (POST "/bulbs/rgb" [:as {{rgb :rgb} :body}]
+      (let [bulbs (db/all-bulbs db)]
+        (if-let [rgb (util/coerce-to-rgb-or-nil rgb)]
+          (response (map (fn [bulb]
+                           (route-command (:id bulb) bulb-chans led/rgb (:ip bulb) rgb))
+                         bulbs))
+          (bad-input {:error "Invalid RGB"}))))
+
+    (POST "/bulbs/reset" []
+      (let [bulbs (db/all-bulbs db)]
+        (response (map (fn [bulb]
+                         (route-command (:id bulb) bulb-chans led/warm-white (:ip bulb) 100))
+                       bulbs))))
+
     (POST "/bulb/:id/rgb" [id :as {{rgb :rgb} :body}]
       (if-let [{:keys [id ip]} (db/get-bulb-id-or-desc db id)]
         (if-let [rgb (util/coerce-to-rgb-or-nil rgb)]
-          (route-command id bulb-chans led/rgb ip rgb)
+          (response (route-command id bulb-chans led/rgb ip rgb))
           (bad-input {:error "Invalid RGB"}))
         (bulb-404 id)))
 
     (POST "/bulb/:id/white" [id :as {{percent :percent} :body}]
       (if-let [{:keys [id ip]} (db/get-bulb-id-or-desc db id)]
         (if (and (integer? percent) (>= percent 0) (<= percent 100))
-          (route-command id bulb-chans led/warm-white ip percent)
+          (response (route-command id bulb-chans led/warm-white ip percent))
           (bad-input {:error "Invalid percent. Please specify from 1-100."}))
         (bulb-404 id)))
 
     (POST "/bulb/:id/on" [id]
       (if-let [{:keys [id ip]} (db/get-bulb-id-or-desc db id)]
-        (route-command id bulb-chans led/turn-on ip)
+        (response (route-command id bulb-chans led/turn-on ip))
         (bulb-404 id)))
 
     (POST "/bulb/:id/off" [id]
       (if-let [{:keys [id ip]} (db/get-bulb-id-or-desc db id)]
-        (route-command id bulb-chans led/turn-off ip)
+        (response (route-command id bulb-chans led/turn-off ip))
         (bulb-404 id)))
 
     (POST "/bulb/:id" [id :as {{:keys [description]} :body}]
