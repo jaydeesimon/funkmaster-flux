@@ -18,11 +18,11 @@
 (defn get-bulb [db id]
   (get-bulb* db {:id id}))
 
-(defn get-bulb-desc [db desc]
+(defn get-bulb-by-desc [db desc]
   (first (filter #(= (str/lower-case desc) (str/lower-case (:description %)))
                  (all-bulbs db))))
 
-(defn get-bulb-id-or-desc [db id-or-desc]
-  (or (get-bulb db id-or-desc) (get-bulb-desc db id-or-desc)))
+(defn get-bulb-by-id-or-desc [db id-or-desc]
+  (or (get-bulb db id-or-desc) (get-bulb-by-desc db id-or-desc)))
 
 

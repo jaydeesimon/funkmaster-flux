@@ -24,7 +24,7 @@
   (context "/api/1" []
 
     (GET "/bulb/:id" [id]
-      (if-let [bulb (db/get-bulb-id-or-desc db id)]
+      (if-let [bulb (db/get-bulb-by-id-or-desc db id)]
         (response bulb)
         (bulb-404 id)))
 
@@ -46,26 +46,26 @@
                        bulbs))))
 
     (POST "/bulb/:id/rgb" [id :as {{rgb :rgb} :body}]
-      (if-let [{:keys [id ip]} (db/get-bulb-id-or-desc db id)]
+      (if-let [{:keys [id ip]} (db/get-bulb-by-id-or-desc db id)]
         (if-let [rgb (util/coerce-to-rgb-or-nil rgb)]
           (response (route-command id bulb-chans led/rgb ip rgb))
           (bad-input {:error "Invalid RGB"}))
         (bulb-404 id)))
 
     (POST "/bulb/:id/white" [id :as {{percent :percent} :body}]
-      (if-let [{:keys [id ip]} (db/get-bulb-id-or-desc db id)]
+      (if-let [{:keys [id ip]} (db/get-bulb-by-id-or-desc db id)]
         (if (and (integer? percent) (>= percent 0) (<= percent 100))
           (response (route-command id bulb-chans led/warm-white ip percent))
           (bad-input {:error "Invalid percent. Please specify from 1-100."}))
         (bulb-404 id)))
 
     (POST "/bulb/:id/on" [id]
-      (if-let [{:keys [id ip]} (db/get-bulb-id-or-desc db id)]
+      (if-let [{:keys [id ip]} (db/get-bulb-by-id-or-desc db id)]
         (response (route-command id bulb-chans led/turn-on ip))
         (bulb-404 id)))
 
     (POST "/bulb/:id/off" [id]
-      (if-let [{:keys [id ip]} (db/get-bulb-id-or-desc db id)]
+      (if-let [{:keys [id ip]} (db/get-bulb-by-id-or-desc db id)]
         (response (route-command id bulb-chans led/turn-off ip))
         (bulb-404 id)))
 
