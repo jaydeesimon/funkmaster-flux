@@ -2,7 +2,6 @@
   (:require [compojure.core :refer :all]
             [ring.util.response :refer [response not-found status]]
             [flux-master.db :as db]
-            [flux-master.db :refer [convert-bools]]
             [flux-led.core :as led]
             [clojure.core.async :refer [>!! >! <! <!! go go-loop chan close! alts! timeout]]
             [taoensso.truss :refer [have have?]]
