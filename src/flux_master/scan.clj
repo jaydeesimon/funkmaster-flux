@@ -4,7 +4,7 @@
 
 (defn- upsert-bulbs! [db bulbs]
   (reduce + (map (fn [{:keys [id ip] :as bulb}]
-                   (if (not (some? (db/get-bulb db id)))
+                   (if (nil? (db/get-bulb db id))
                      (db/insert-bulb db bulb)
                      (db/update-bulb db {:ip ip :id id})))
                  bulbs)))

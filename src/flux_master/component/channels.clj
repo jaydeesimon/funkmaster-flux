@@ -1,4 +1,4 @@
-(ns flux-master.component.bulb-channels
+(ns flux-master.component.channels
   (:require [clojure.core.async :refer [>! <! <!! go go-loop chan close! alts! timeout]]
             [flux-master.db :refer [all-bulbs]]
             [com.stuartsierra.component :as component]))

@@ -1,4 +1,4 @@
-(ns flux-master.component.bulb-scanner
+(ns flux-master.component.scanner
   (:require [clojure.core.async :refer [>! >!! go go-loop chan close! alts! timeout]]
             [com.stuartsierra.component :as component]
             [flux-led.core :as led]))
@@ -12,7 +12,7 @@
             (recur (alts! [c (timeout delay)])))))
     c))
 
-(defrecord BulbScanner [scanned-bulbs-fn]
+(defrecord Scanner [scanned-bulbs-fn]
   component/Lifecycle
 
   (start [this]
@@ -29,4 +29,4 @@
       this)))
 
 (defn bulb-scanner [scanned-bulbs-fn]
-  (->BulbScanner scanned-bulbs-fn))
+  (->Scanner scanned-bulbs-fn))

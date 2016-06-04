@@ -9,8 +9,8 @@
             [ring.middleware.defaults :refer [wrap-defaults api-defaults]]
             [ring.middleware.json :refer [wrap-json-response wrap-json-body]]
             [flux-master.endpoint.bulbs :as be]
-            [flux-master.component.bulb-scanner :as bs]
-            [flux-master.component.bulb-channels :as bc]
+            [flux-master.component.scanner :as bs]
+            [flux-master.component.channels :as bc]
             [flux-master.scan :as scan]))
 
 (def base-config
