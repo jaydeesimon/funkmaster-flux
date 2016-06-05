@@ -47,7 +47,7 @@
   (let [size-three? #(= (count %) 3)
         in-range? (fn [n] (and (>= n 0) (<= n 255)))
         all-vals-in-range? #(every? in-range? %)
-        valid-rgb? (every-pred size-three? all-vals-in-range?)]
+        valid-rgb? (every-pred vector? size-three? all-vals-in-range?)]
     (when (valid-rgb? rgb)
       rgb)))
 
