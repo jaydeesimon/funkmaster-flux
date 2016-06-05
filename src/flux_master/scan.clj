@@ -15,7 +15,8 @@
                        (fn [bulb-chans id]
                          (if (not (get bulb-chans id))
                            (assoc bulb-chans id (chan))
-                           bulb-chans)) id))
+                           bulb-chans))
+                       id))
               bulbs)))
 
 (defn with-scanned-bulbs [component bulbs]
