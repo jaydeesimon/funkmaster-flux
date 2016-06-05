@@ -5,7 +5,7 @@
 
 (defn- setup-scan-chan [component scanned-bulbs-fn]
   (let [c (chan)
-        delay 5000]
+        delay 4000]
     (go-loop [[v _] (alts! [c (timeout delay)])]
       (when (not= v :stop)
         (do (scanned-bulbs-fn component (led/scan))
