@@ -2,6 +2,9 @@
   (:require [clojure.string :as str])
   (:import (clojure.lang MapEntry)))
 
+
+;; These map-related functions were lifted from:
+;; https://github.com/amalloy/useful/blob/develop/src/flatland/useful/map.clj
 (defmacro map-entry
   "Create a clojure.lang.MapEntry from a and b. Equivalent to a cons cell.
   flatland.useful.experimental.unicode contains a shortcut to this, named ·."
